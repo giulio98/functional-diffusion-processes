@@ -1,0 +1,96 @@
+# @package _global_
+defaults:
+  - override /trainers: trainer_vit
+  - override /models: uvit
+  - override /datasets: spoken_digit
+  - override /losses: mse_loss
+  - override /predictors: euler
+  - override /correctors: langevin
+  - override /sdes: unidimensional_heat_subvp
+
+trainers:
+  model_name: "local"
+  training_config:
+    total_steps: 500000
+    eval_freq: 10000
+    scheduler_steps: 10000
+    checkpoint_freq: 10000
+    warmup_steps: 3000
+    decay_steps : 30000
+    peak_value: 3.3e-5
+    end_value: 1e-5
+    save_dir: ${oc.env:LOGS_ROOT}/exp_spoken_digit_patch_size${models.model_config.patch_size}_embeddings_size${models.model_config.embeddings_size}_num_heads${models.model_config.transformer.num_heads}_num_layers${models.model_config.transformer.num_layers}_adamw_betamax${sdes.sde_config.beta_max}_const${sdes.sde_config.const}_scheduler${trainers.training_config.scheduler_steps}_warmup${trainers.training_config.warmup_steps}_decay${trainers.training_config.decay_steps}_peak${trainers.training_config.peak_value}_end${trainers.training_config.end_value}_predictx0_normalized_new_energy1_normalizedxfreq_reducemean
+    ema_rate: 0.9999
+    sampling_only: False
+    weight_decay: 0.03
+
+  optimizer:
+    _target_: "optax.MultiSteps"
+    opt:
+      _target_: "optax.chain"
+      _args_:
+        - _target_: "optax.clip"
+          max_delta: 1.0
+        - _target_: "optax.adamw"
+          learning_rate:
+            _target_: "optax.warmup_cosine_decay_schedule"
+            init_value: 0.0
+            peak_value: ${trainers.training_config.peak_value}
+            warmup_steps: ${trainers.training_config.warmup_steps}
+            decay_steps: ${trainers.training_config.decay_steps}
+            end_value: ${trainers.training_config.end_value}
+          weight_decay: ${trainers.training_config.weight_decay}
+    every_k_schedule: ${trainers.training_config.gradient_accumulation_steps}
+
+  trainer_logging:
+    use_wandb: True
+
+losses:
+  loss_config:
+    frequency_space: True
+    normalize_time: False
+    reduce_mean: True
+    scheduler_steps: ${trainers.training_config.scheduler_steps}
+    use_scheduler: False
+    y_input: True
+correctors:
+  snr: 0.16
+
+samplers:
+  sampler_config:
+    N: 100
+    k: 1
+    denoise: True
+    probability_flow: True
+    factor: 0.6
+
+sdes:
+  sde_config:
+    beta_max: 10.0
+    beta_min: 0.1
+    const: 0.02
+    x_norm: 8000
+    energy_norm: 1
+
+
+models:
+  model_config:
+    patch_size: 1
+    in_chans: ${datasets.train.data_config.output_size}
+    image_size: ${datasets.train.data_config.audio_sample_rate}
+    old_image_size: ${datasets.train.data_config.audio_sample_rate}
+    embeddings_size: 128
+    add_position: "embedding"
+    is_unidimensional: True
+    transformer:
+        num_heads: 4
+        num_layers: 7
+        mlp_dim: 512
+        mlp_ratio: 4
+        dropout_rate: 0.0
+        attention_dropout_rate: 0.0
+        skip: True
+datasets:
+  train:
+    data_config:
+      batch_size: 4 #put the largest possible batch size

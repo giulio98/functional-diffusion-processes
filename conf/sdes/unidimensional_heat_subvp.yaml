@@ -1,0 +1,16 @@
+_target_: functional_diffusion_processes.sdetools.heat_subvp_sde.HeatSubVPSDE
+sde_config:
+  frequency_space: True
+  beta_max: 5.0
+  beta_min: 0.1
+  T: ${samplers.sampler_config.T}
+  N: ${samplers.sampler_config.N}
+  eps: ${samplers.sampler_config.eps}
+  const: 0.02
+  factor: 1.0
+  probability_flow: False
+  predict_noise: False
+  x_norm: 64
+  energy_norm: 256
+  shape:
+    - ${datasets.train.data_config.audio_sample_rate}

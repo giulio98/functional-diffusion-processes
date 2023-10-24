@@ -1,0 +1,4 @@
+_target_: functional_diffusion_processes.samplers.correctors.langevin_corrector.LangevinCorrector
+name: "langevin"
+snr: 0.16
+n_steps: 1

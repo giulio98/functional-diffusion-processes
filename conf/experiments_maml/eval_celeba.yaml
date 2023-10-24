@@ -1,0 +1,70 @@
+ # @package _global_
+defaults:
+  - override /trainers: trainer_maml
+  - override /models: mlp_modulation
+  - override /datasets: celeba
+  - override /sdes: heat_subvp
+  - override /samplers: pc_sampler
+  - override /predictors: euler
+  - override /correctors: langevin
+
+
+trainers:
+  mode: "eval"
+  model_name: "local"
+  training_config:
+    inner_steps: 3
+    use_meta_sgd: True
+    ema_rate: 0.9999
+    save_dir: ${oc.env:LOGS_ROOT}/inr_celeba
+  trainer_logging:
+    use_wandb: True
+
+  evaluation_config:
+    seed: 43 # random seed for reproducibility
+    eval_dir: ${oc.env:LOGS_ROOT}/inr_celeba
+    num_samples: 50000 # number of samples to be generated for evaluation
+
+sdes:
+  sde_config:
+    beta_max: 5.0
+    const: 0.02
+    factor: 1.0
+    probability_flow: True
+    x_norm: 64
+    energy_norm: 1
+
+correctors:
+  snr: 0.17
+
+samplers:
+  sampler_config:
+    N: 400
+    k: 1
+    denoise: True
+
+models:
+  model_config:
+    layer_sizes:
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - ${datasets.test.data_config.output_size}
+    y_input: True
+datasets:
+  test:
+    _target_: functional_diffusion_processes.datasets.celeba_dataset.CELEBADataset
+    data_config:
+      batch_size: 256

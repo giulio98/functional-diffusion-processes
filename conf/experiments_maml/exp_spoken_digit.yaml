@@ -1,0 +1,77 @@
+# @package _global_
+defaults:
+  - override /trainers: trainer_maml
+  - override /models: mlp_modulation
+  - override /datasets: spoken_digit
+  - override /sdes: unidimensional_heat_subvp
+
+trainers:
+  model_name: "local"
+  training_config:
+    total_steps: 1000000
+    eval_freq: 5000
+    scheduler_steps: 10000
+    checkpoint_freq: 10000
+    warmup_steps: 5000
+    decay_steps : 10000
+    peak_value: 3.3e-5
+    end_value: 1e-5
+    inner_learning_rate: 1e-3
+    inner_steps: 3
+    save_dir: ${oc.env:LOGS_ROOT}/exp_spoken_digit_adamw_betamax${sdes.sde_config.beta_max}_const${sdes.sde_config.const}_scheduler${trainers.training_config.scheduler_steps}_warmup${trainers.training_config.warmup_steps}_decay${trainers.training_config.decay_steps}_peak${trainers.training_config.peak_value}_end${trainers.training_config.end_value}_innerlr${trainers.training_config.inner_learning_rate}_inner_steps${trainers.training_config.inner_steps}_predictx0_maml_normalized_fix___
+    use_meta_sgd: False
+    ema_rate: 0.9999
+    sampling_only: False
+    weight_decay: 0.03
+
+  trainer_logging:
+    use_wandb: True
+
+losses:
+  loss_config:
+    frequency_space: True
+    normalize_time: True
+    reduce_mean: False
+    scheduler_steps: ${trainers.training_config.scheduler_steps}
+    use_scheduler: True
+    y_input: True
+
+sdes:
+  sde_config:
+    beta_max: 10.0
+    beta_min: 0.1
+    const: 0.02
+    x_norm: 64
+    energy_norm: 256
+
+correctors:
+  snr: 0.16
+
+samplers:
+  sampler_config:
+    N: 100
+    k: 1
+    denoise: True
+    probability_flow: True
+    factor: 0.6
+
+
+models:
+  model_config:
+    use_dense_lr: False
+
+    layer_sizes:
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - ${datasets.train.data_config.output_size}
+    y_input: True
+datasets:
+  train:
+    data_config:
+      batch_size: 4 #put the largest possible batch size

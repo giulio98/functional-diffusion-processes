@@ -1,0 +1,79 @@
+# @package _global_
+defaults:
+  - override /trainers: trainer_vit
+  - override /models: uvit
+  - override /datasets: celeba
+  - override /sdes: heat_subvp
+  - override /predictors: euler
+  - override /correctors: langevin
+
+trainers:
+  mode: "eval"
+  model_name: "local"
+  training_config:
+    save_dir: ${oc.env:LOGS_ROOT}/uvit_celeba
+    ema_rate: 0.9999
+    weight_decay: 0.03
+  evaluation_config:
+    seed: 43 # random seed for reproducibility
+    eval_dir: ${oc.env:LOGS_ROOT}/uvit_celeba
+    num_samples: 50000 # number of samples to be generated for evaluation
+  trainer_logging:
+    use_wandb: True
+  optimizer:
+    _target_: "optax.MultiSteps"
+    opt:
+      _target_: "optax.chain"
+      _args_:
+        # - _target_: "optax.clip"
+        #  max_delta: 1.0
+        - _target_: "optax.adamw"
+          learning_rate:
+            _target_: "optax.warmup_cosine_decay_schedule"
+            init_value: 0.0
+            peak_value: ${trainers.training_config.peak_value}
+            warmup_steps: ${trainers.training_config.warmup_steps}
+            decay_steps: ${trainers.training_config.decay_steps}
+            end_value: ${trainers.training_config.end_value}
+          weight_decay: ${trainers.training_config.weight_decay}
+    every_k_schedule: ${trainers.training_config.gradient_accumulation_steps}
+
+correctors:
+  snr: 0.16
+
+samplers:
+  sampler_config:
+    N: 100
+    k: 1
+    denoise: True
+
+sdes:
+  sde_config:
+    beta_max: 10.0
+    const: 0.02
+    probability_flow: True
+    factor: 2.0
+    x_norm: 64
+    energy_norm: 64
+
+models:
+  model_config:
+    patch_size: 1
+    embeddings_size: 512
+    add_position: "encoding"
+    is_unidimensional: False
+    transformer:
+        num_heads: 8
+        num_layers: 7
+        mlp_dim: 2048
+        mlp_ratio: 4
+        dropout_rate: 0.0
+        attention_dropout_rate: 0.0
+        skip: True
+
+
+
+datasets:
+  test:
+    data_config:
+      batch_size: 64

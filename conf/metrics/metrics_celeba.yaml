@@ -1,0 +1,9 @@
+_target_: functional_diffusion_processes.metrics.fid_metric.FIDMetric
+metric_config:
+  dataset_name: "celeb_a_train"
+  real_features_path: ${oc.env:DATA_ROOT}/stats # path containing statistics for real data
+  num_samples: ${trainers.evaluation_config.num_samples} # number of samples to be generated for evaluation
+feature_extractor:
+  _target_ : functional_diffusion_processes.metrics.feature_extractor.InceptionFeatureExtractor
+  model_name: "inception"
+  inception_v3: False

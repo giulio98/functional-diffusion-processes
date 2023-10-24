@@ -1,0 +1,4 @@
+_target_: functional_diffusion_processes.samplers.correctors.dummy_corrector.NoneCorrector
+name: "none"
+snr: 0
+n_steps: 0

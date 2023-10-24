@@ -1,0 +1,7 @@
+_target_: functional_diffusion_processes.losses.mse_loss.MSELoss
+loss_config:
+  frequency_space: True
+  normalize_time: True
+  reduce_mean: True
+  use_scheduler: True
+  y_input: True

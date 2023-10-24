@@ -1,0 +1,9 @@
+_target_: functional_diffusion_processes.samplers.pc_sampler.PCSampler
+sampler_config:
+  T: 1.0
+  eps: 1e-3
+  N: 100
+  k: 1
+  denoise: True
+  output_size: ${datasets.train.data_config.output_size}
+  do_super_resolution: False

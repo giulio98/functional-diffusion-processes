@@ -1,0 +1,31 @@
+_target_: functional_diffusion_processes.models.mlp_modulation.MLPModulationLR
+model_config:
+  layer_sizes:
+    - 128
+    - 128
+    - 128
+    - 128
+    - 128
+    - 128
+    - 128
+    - 128
+    - 128
+    - ${datasets.train.data_config.output_size}
+  modulation_freq: 30.
+  exp_const: 10.
+  skip_connections: 1
+  use_dense_lr: True
+  uniform_min_val: 0.005
+  uniform_max_val: 0.1
+  y_input: False
+
+
+optimizer_inner:
+  _target_: "optax.chain"
+  _args_:
+    - _target_: "optax.clip"
+      max_delta: 1.0
+    - _target_: "optax.sgd"
+      learning_rate: ${trainers.training_config.inner_learning_rate}
+
+inner_steps: 3

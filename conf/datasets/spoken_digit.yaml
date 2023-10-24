@@ -1,0 +1,31 @@
+train:
+  _target_: functional_diffusion_processes.datasets.spoken_digit_dataset.SpokenDigitDataset
+  data_config:
+    seed: 42
+    batch_size: 16
+    audio_sample_rate: 8000
+    audio_max_duration: 1.0
+    audio_max_intensity: 32767
+    audio_min_intensity: -32768
+    output_size: 1
+    data_centered: False
+    data_dir: ${oc.env:DATA_ROOT}/tensorflow_datasets
+    download: True
+  split: "train"
+  evaluation: False
+
+test:
+  _target_: functional_diffusion_processes.datasets.spoken_digit_dataset.SpokenDigitDataset
+  data_config:
+    seed: 43
+    batch_size: 16
+    audio_sample_rate: 8000
+    audio_max_duration: 1.0
+    audio_max_intensity: 32767
+    audio_min_intensity: -32768
+    output_size: 1
+    data_centered: False
+    data_dir: ${oc.env:DATA_ROOT}/tensorflow_datasets
+    download: True
+  split: "train"
+  evaluation: True

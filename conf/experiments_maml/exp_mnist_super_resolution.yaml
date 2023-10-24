@@ -1,0 +1,72 @@
+ # @package _global_
+defaults:
+  - override /trainers: trainer_maml
+  - override /models: mlp_modulation
+  - override /datasets: mnist
+  - override /sdes: heat_subvp
+  - override /samplers: pc_sampler
+  - override /predictors: euler
+  - override /correctors: langevin
+
+trainers:
+  model_name: "local"
+  training_config:
+    seed: 1
+    total_steps: 270001
+    eval_freq: 1
+    save_dir: ${oc.env:LOGS_ROOT}/inr_mnist
+    inner_steps: 3
+    sampling_only: True
+    use_meta_sgd: False
+    ema_rate: 0.9999
+  trainer_logging:
+    use_wandb: True
+
+
+sdes:
+  sde_config:
+    beta_max: 5.0
+    const: 0.02
+    psm_type: "time_independent"
+    probability_flow: False
+    factor: 2.0
+    x_norm: 32
+    energy_norm: 1
+
+correctors:
+  snr: 0.19
+
+samplers:
+  sampler_config:
+    N: 50
+    k: 1
+    denoise: True
+    do_super_resolution: True
+    target_shape: [128, 128]
+
+
+
+models:
+  model_config:
+    uniform_min_val: 0.005
+    uniform_max_val: 0.1
+    use_dense_lr: False
+
+    layer_sizes:
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - ${datasets.train.data_config.output_size}
+    y_input: False
+
+datasets:
+  train:
+    data_config:
+      image_height_size: 32
+      image_width_size: 32
+      batch_size: 4 #put the largest possible batch size

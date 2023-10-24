@@ -1,0 +1,33 @@
+train:
+  _target_: functional_diffusion_processes.datasets.mnist_dataset.MNISTDataset
+  data_config:
+    seed: 42
+    batch_size: 16
+    image_height_size: 32
+    image_width_size: 32
+    output_size: 1
+    random_flip: False
+    uniform_dequantization: False
+    data_centered: True
+    data_dir: ${oc.env:DATA_ROOT}/tensorflow_datasets
+    download: True
+    is_mask: False
+  split: "train"
+  evaluation: False
+
+test:
+  _target_: functional_diffusion_processes.datasets.mnist_dataset.MNISTDataset
+  data_config:
+    seed: 43
+    batch_size: 16
+    image_height_size: 32
+    image_width_size: 32
+    output_size: 1
+    random_flip: False
+    uniform_dequantization: False
+    data_centered: True
+    data_dir: ${oc.env:DATA_ROOT}/tensorflow_datasets
+    download: True
+    is_mask: False
+  split: "test"
+  evaluation: True

@@ -1,0 +1,31 @@
+train:
+  _target_: functional_diffusion_processes.datasets.celeba_dataset.CELEBADataset
+  data_config:
+    seed: 42
+    batch_size: 16
+    image_height_size: 64
+    image_width_size: 64
+    output_size: 3
+    random_flip: True
+    uniform_dequantization: False
+    data_centered: True
+    data_dir: ${oc.env:DATA_ROOT}/tensorflow_datasets
+    download: False
+  split: "train"
+  evaluation: False
+
+test:
+  _target_: functional_diffusion_processes.datasets.celeba_dataset.CELEBADataset
+  data_config:
+    seed: 43
+    batch_size: 1
+    image_height_size: 64
+    image_width_size: 64
+    output_size: 3
+    random_flip: True
+    uniform_dequantization: False
+    data_centered: True
+    data_dir: ${oc.env:DATA_ROOT}/tensorflow_datasets
+    download: False
+  split: "train"
+  evaluation: True

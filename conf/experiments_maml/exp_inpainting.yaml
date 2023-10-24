@@ -1,0 +1,69 @@
+ # @package _global_
+defaults:
+  - override /trainers: trainer_maml
+  - override /models: mlp_modulation
+  - override /datasets: celeba
+  - override /sdes: heat_subvp
+  - override /samplers: pc_inpainter_sampler
+  - override /predictors: euler
+  - override /correctors: langevin
+
+trainers:
+  model_name: "local"
+  training_config:
+    total_steps: 450001
+    eval_freq: 1
+    save_dir: ${oc.env:LOGS_ROOT}/inr_celeba
+    inner_steps: 3
+    sampling_only: True
+    use_meta_sgd: True
+    ema_rate: 0.9999
+    sampling_type: "inpainting"
+  trainer_logging:
+    use_wandb: True
+
+sdes:
+  sde_config:
+    beta_max: 5.0
+    const: 0.02
+    factor: 2.0
+    probability_flow: True
+    x_norm: 64
+    energy_norm: 1
+
+correctors:
+  snr: 0.06
+
+samplers:
+  sampler_config:
+    N: 100
+    k: 1
+    denoise: True
+
+
+models:
+  model_config:
+    layer_sizes:
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - ${datasets.train.data_config.output_size}
+    y_input: True
+datasets:
+  train:
+    data_config:
+      image_height_size: 64
+      image_width_size: 64
+      batch_size: 4 #put the largest possible batch size

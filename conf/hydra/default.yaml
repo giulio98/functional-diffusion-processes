@@ -1,0 +1,21 @@
+## https://github.com/facebookresearch/hydra/issues/910
+# Not changing the working directory
+run:
+  dir: .
+sweep:
+  dir: .
+  subdir: .
+
+# Not saving the .hydra directory
+output_subdir: null
+
+job:
+  env_set:
+    WANDB_START_METHOD: thread
+    WANDB_DIR: ${oc.env:PROJECT_ROOT}
+
+defaults:
+  - override job_logging: colorlog
+  - override hydra_logging: colorlog
+
+verbose: INFO

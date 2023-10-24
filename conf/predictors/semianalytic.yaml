@@ -1,0 +1,2 @@
+_target_: functional_diffusion_processes.samplers.predictors.semianalytic_predictor.SemiAnalyticPredictor
+name: "semianalytic"

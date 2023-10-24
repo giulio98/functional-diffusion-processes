@@ -1,0 +1,74 @@
+# @package _global_
+defaults:
+  - override /trainers: trainer_maml
+  - override /models: mlp_modulation
+  - override /datasets: mnist
+
+trainers:
+  model_name: "local"
+  training_config:
+    total_steps: 500000
+    eval_freq: 10000
+    scheduler_steps: 10000
+    checkpoint_freq: 10000
+    warmup_steps: 6000
+    decay_steps : 30000
+    peak_value: 3.3e-5
+    end_value: 1e-5
+    inner_learning_rate: 1e-2
+    inner_steps: 3
+    save_dir: ${oc.env:LOGS_ROOT}/train_inr_mnist
+    use_meta_sgd: False
+    ema_rate: 0.9999
+    sampling_only: False
+  trainer_logging:
+    use_wandb: True
+
+losses:
+  loss_config:
+    frequency_space: True
+    normalize_time: True
+    scheduler_steps: ${trainers.training_config.scheduler_steps}
+    use_scheduler: True
+    reduce_mean: False
+    y_input: False
+
+
+sdes:
+  sde_config:
+    beta_max: 5.0
+    const: 0.02
+    psm_type: "time_independent"
+    x_norm: 32
+    energy_norm: 1
+
+correctors:
+  snr: 0.16
+
+samplers:
+  sampler_config:
+    N: 100
+    k: 1
+    denoise: True
+    probability_flow: True
+    factor: 0.6
+
+models:
+  model_config:
+    use_dense_lr: False
+
+    layer_sizes:
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - ${datasets.train.data_config.output_size}
+    y_input: False
+datasets:
+  train:
+    data_config:
+      batch_size: 64 #put the largest possible batch size

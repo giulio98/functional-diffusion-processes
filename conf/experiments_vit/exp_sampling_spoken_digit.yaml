@@ -1,0 +1,81 @@
+ # @package _global_
+defaults:
+  - override /trainers: trainer_vit
+  - override /models: uvit
+  - override /datasets: spoken_digit
+  - override /losses: mse_loss
+  - override /predictors: reverse_diffusion
+  - override /correctors: langevin
+  - override /sdes: unidimensional_heat_subvp
+
+trainers:
+  model_name: "390001_ku9j3wxr:v0"
+  training_config:
+    total_steps: 390001
+    eval_freq: 1
+    save_dir: ${oc.env:LOGS_ROOT}/samples_spoken_digit_predictor${predictors.name}_corrector${correctors.name}_integration${samplers.sampler_config.N}_factor${sdes.sde_config.factor}_snr${correctors.snr}_ode${sdes.sde_config.probability_flow}_const0.02
+    ema_rate: 0.9999
+    sampling_only: True
+    weight_decay: 0.03
+
+  optimizer:
+    _target_: "optax.MultiSteps"
+    opt:
+      _target_: "optax.chain"
+      _args_:
+       # - _target_: "optax.clip"
+       #   max_delta: 1.0
+        - _target_: "optax.adamw"
+          learning_rate:
+            _target_: "optax.warmup_cosine_decay_schedule"
+            init_value: 0.0
+            peak_value: ${trainers.training_config.peak_value}
+            warmup_steps: ${trainers.training_config.warmup_steps}
+            decay_steps: ${trainers.training_config.decay_steps}
+            end_value: ${trainers.training_config.end_value}
+          weight_decay: ${trainers.training_config.weight_decay}
+    every_k_schedule: ${trainers.training_config.gradient_accumulation_steps}
+
+  trainer_logging:
+    use_wandb: True
+
+correctors:
+  snr: 0.16
+
+samplers:
+  sampler_config:
+    N: 100
+    k: 1
+    denoise: True
+
+sdes:
+  sde_config:
+    beta_max: 10.0
+    const: 0.02
+    probability_flow: False
+    factor: 1.0
+    x_norm: 8000
+    energy_norm: 1
+
+models:
+  model_config:
+    patch_size: 2
+    in_chans: ${datasets.train.data_config.output_size}
+    image_size: ${datasets.train.data_config.audio_sample_rate}
+    old_image_size: ${datasets.train.data_config.audio_sample_rate}
+    embeddings_size: 512
+    add_position: "embedding"
+    is_unidimensional: True
+    transformer:
+        num_heads: 8
+        num_layers: 13
+        mlp_dim: 2048
+        mlp_ratio: 4
+        dropout_rate: 0.0
+        attention_dropout_rate: 0.0
+        skip: True
+
+datasets:
+  train:
+    data_config:
+      batch_size: 1 #put the largest possible batch size

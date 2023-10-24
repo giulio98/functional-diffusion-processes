@@ -1,0 +1,15 @@
+_target_: functional_diffusion_processes.models.uvit.UViT
+model_config:
+  patch_size: 1
+  in_chans: ${datasets.train.data_config.output_size}
+  image_size: ${datasets.train.data_config.image_height_size}
+  old_image_size: ${datasets.train.data_config.image_height_size}
+  embeddings_size: 256
+  transformer:
+    num_layers: 12
+    num_heads: 8
+    mlp_dim: 256 * 4
+    mlp_ratio: 4.0
+    dropout_rate: 0.0
+    attention_dropout_rate: 0.0
+    skip: True

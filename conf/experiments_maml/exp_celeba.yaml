@@ -1,0 +1,90 @@
+# @package _global_
+defaults:
+  - override /trainers: trainer_maml
+  - override /models: mlp_modulation
+  - override /datasets: celeba
+  - override /sdes: heat_subvp
+
+trainers:
+  model_name: "local"
+  training_config:
+    total_steps: 500000
+    eval_freq: 10000
+    scheduler_steps: 10000
+    checkpoint_freq: 10000
+    warmup_steps: 3000
+    decay_steps : 10000
+    peak_value: 3.3e-5
+    end_value: 1e-5
+    inner_learning_rate: 1e-2
+    inner_steps: 3
+    save_dir: ${oc.env:LOGS_ROOT}/train_inr_celeba
+    use_meta_sgd: True
+    ema_rate: 0.9999
+    sampling_only: False
+  trainer_logging:
+    use_wandb: True
+
+losses:
+  loss_config:
+    frequency_space: True
+    normalize_time: True
+    reduce_mean: False
+    scheduler_steps: ${trainers.training_config.scheduler_steps}
+    use_scheduler: True
+    y_input: True
+
+sdes:
+  sde_config:
+    beta_max: 5.0
+    const: 0.02
+    factor: 0.6
+    probability_flow: True
+    x_norm: 64
+    energy_norm: 1
+
+correctors:
+  snr: 0.16
+
+samplers:
+  sampler_config:
+    N: 100
+    k: 1
+    denoise: True
+
+
+
+models:
+  model_config:
+    use_dense_lr: True
+
+    layer_sizes:
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - 256
+      - ${datasets.train.data_config.output_size}
+    y_input: True
+datasets:
+  train:
+    data_config:
+      batch_size: 16 #put the largest possible batch size
+
+trainer_logging:
+  use_wandb: True # if True, wandb is used for logging
+  wandb_init:
+    name: ${trainers.training_config.save_dir}
+    project: "your_project_name"
+    entity: "your_entity_name"
+    save_code: False

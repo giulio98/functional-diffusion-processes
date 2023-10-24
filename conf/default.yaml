@@ -1,0 +1,21 @@
+# metadata specialised for each experiment
+core:
+  project_name: functional-diffusion-processes
+  storage_dir: ${oc.env:PROJECT_ROOT}/storage
+  version: 0.0.1
+  tags: null
+
+defaults:
+  - hydra: default
+  - datasets: celeba
+  - metrics: metrics_celeba
+  - models: mlp_modulation
+  - trainers: trainer_maml
+  - sdes: heat_subvp
+  - predictors: euler
+  - correctors: langevin
+  - samplers: pc_sampler
+  - losses: mse_loss
+  - _self_ # as last argument to allow the override of parameters via this main config
+#    Decomment this parameter to get parallel job running
+  #- override hydra/launcher: joblib

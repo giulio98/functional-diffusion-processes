@@ -1,0 +1,68 @@
+ # @package _global_
+defaults:
+  - override /trainers: trainer_maml
+  - override /models: mlp_modulation
+  - override /datasets: mnist
+  - override /sdes: heat_subvp
+  - override /samplers: pc_sampler
+  - override /predictors: euler
+  - override /correctors: langevin
+  - override /metrics: metrics_mnist
+
+
+trainers:
+  mode: "eval"
+  model_name: "local"
+  training_config:
+    inner_steps: 3
+    use_meta_sgd: False
+    ema_rate: 0.9999
+    save_dir: ${oc.env:LOGS_ROOT}/inr_mnist
+  trainer_logging:
+    use_wandb: True
+
+  evaluation_config:
+    seed: 43 # random seed for reproducibility
+    eval_dir: ${oc.env:LOGS_ROOT}/inr_mnist # directory where evaluation results are saved
+    num_samples: 10000 # number of samples to be generated for evaluation
+
+sdes:
+  sde_config:
+    beta_max: 5.0
+    const: 0.02
+    psm_type: "time_independent"
+    probability_flow: False
+    factor: 2.0
+    x_norm: 32
+    energy_norm: 1
+
+correctors:
+  snr: 0.19
+
+samplers:
+  sampler_config:
+    N: 50
+    k: 1
+    denoise: True
+
+models:
+  model_config:
+    uniform_min_val: 0.005
+    uniform_max_val: 0.1
+    use_dense_lr: False
+
+    layer_sizes:
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - 128
+      - ${datasets.train.data_config.output_size}
+    y_input: False
+datasets:
+  test:
+    data_config:
+      batch_size: 1

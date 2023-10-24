@@ -1,0 +1,2 @@
+_target_: functional_diffusion_processes.samplers.predictors.dummy_predictor.NonePredictor
+name: "none"

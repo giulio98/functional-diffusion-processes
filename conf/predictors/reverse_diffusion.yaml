@@ -1,0 +1,2 @@
+_target_: functional_diffusion_processes.samplers.predictors.reverse_diffusion_predictor.ReverseDiffusionPredictor
+name: "reverse_diffusion"
