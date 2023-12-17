@@ -1,7 +1,7 @@
 # Continuous-Time Functional Diffusion Processes
 
 ![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)
-[![OpenReview](https://img.shields.io/badge/arXiv-2303.00800-b31b1b.svg)](https://openreview.net/forum?id=VPrir0p5b6)
+[![OpenReview](https://img.shields.io/badge/OpenReview-VPrir0p5b6-brightgreen.svg)](https://openreview.net/forum?id=VPrir0p5b6)
 [![NeurIPS 2023](https://img.shields.io/badge/NeurIPS-2023-4b44ce.svg)](https://nips.cc/Conferences/2023)
 
 Authors: Giulio Franzese, Giulio Corallo, Simone Rossi, Markus Heinonen, Maurizio Filippone, Pietro Michiardi
