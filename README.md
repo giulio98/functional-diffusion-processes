@@ -160,12 +160,12 @@ Our code builds upon several outstanding open source projects and papers:
 # Citation
 If you use our code or paper, please cite:
 ```bib
-@misc{franzese2023continuoustime,
-      title={Continuous-Time Functional Diffusion Processes},
-      author={Giulio Franzese and Giulio Corallo and Simone Rossi and Markus Heinonen and Maurizio Filippone and Pietro Michiardi},
-      year={2023},
-      eprint={2303.00800},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@inproceedings{
+franzese2023continuoustime,
+title={Continuous-Time Functional Diffusion Processes},
+author={Giulio Franzese and Giulio Corallo and Simone Rossi and Markus Heinonen and Maurizio Filippone and Pietro Michiardi},
+booktitle={Thirty-seventh Conference on Neural Information Processing Systems},
+year={2023},
+url={https://openreview.net/forum?id=VPrir0p5b6}
 }
 ```
