@@ -60,7 +60,7 @@ Before you begin with any experiments, ensure to create a `.env` file with the f
 export WANDB_API_KEY=<your wandb api key>
 export HOME=<your_home_directory>  # e.g., /home/username
 export CUDA_HOME=/usr/local/cuda
-export PROJECT_ROOT=<your_project_directory>  # /home/username/functional_diffusion_processes
+export PROJECT_ROOT=<your_project_directory>  # /home/username/functional-diffusion-processes
 export DATA_ROOT=${PROJECT_ROOT}/data
 export LOGS_ROOT=${PROJECT_ROOT}/logs
 export TFDS_DATA_DIR=${DATA_ROOT}/tensorflow_datasets

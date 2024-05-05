@@ -1,3 +1,6 @@
+
+
+
  # @package _global_
 defaults:
   - override /trainers: trainer_maml
@@ -24,7 +27,7 @@ trainers:
   evaluation_config:
     seed: 43 # random seed for reproducibility
     eval_dir: ${oc.env:LOGS_ROOT}/inr_mnist # directory where evaluation results are saved
-    num_samples: 10000 # number of samples to be generated for evaluation
+    num_samples: 16000 # number of samples to be generated for evaluation
 
 sdes:
   sde_config:
@@ -65,4 +68,6 @@ models:
 datasets:
   test:
     data_config:
-      batch_size: 1
+      image_height_size: 32
+      image_width_size: 32
+      batch_size: 512

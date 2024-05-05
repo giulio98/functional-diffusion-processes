@@ -687,22 +687,24 @@ class Trainer(abc.ABC):
             fid_score, inception_score = fid_metric.compute_fid(self.eval_dir, num_sampling_rounds)
             pylogger.info("FID: %.6e" % fid_score)
             pylogger.info("Inception score %.6e" % inception_score)
+            if not ds_test.data_config.output_size == 1:
+                # Compute FID clean
+                clean_dataset = os.path.join(
+                    fid_metric.metric_config.real_features_path,
+                    f"{fid_metric.metric_config.dataset_name.lower()}_clean",
+                )
+                clean_fake_dataset = os.path.join(self.eval_dir, "clean")
+                fid_clean = fid.compute_fid(clean_fake_dataset, clean_dataset, mode="clean")
+                pylogger.info("FID clean: %.6e" % fid_clean)
 
-            # Compute FID clean
-            clean_dataset = os.path.join(
-                fid_metric.metric_config.real_features_path, f"{fid_metric.metric_config.dataset_name.lower()}_clean"
-            )
-            clean_fake_dataset = os.path.join(self.eval_dir, "clean")
-            fid_clean = fid.compute_fid(clean_fake_dataset, clean_dataset, mode="clean")
-            pylogger.info("FID clean: %.6e" % fid_clean)
-
-            # Compute FID-CLIP
-            fid_clip = fid.compute_fid(clean_fake_dataset, clean_dataset, mode="clean", model_name="clip_vit_b_32")
-            pylogger.info("FID-CLIP: %.6e" % fid_clip)
+                # Compute FID-CLIP
+                fid_clip = fid.compute_fid(clean_fake_dataset, clean_dataset, mode="clean", model_name="clip_vit_b_32")
+                pylogger.info("FID-CLIP: %.6e" % fid_clip)
 
             if self.logging.use_wandb:
                 wandb.log({"FID": float(fid_score)})
                 wandb.log({"inception score": float(inception_score)})
-                wandb.log({"FID clean": float(fid_clean)})
-                wandb.log({"FID-CLIP": float(fid_clip)})
+                if not ds_test.data_config.output_size == 1:
+                    wandb.log({"FID clean": float(fid_clean)})
+                    wandb.log({"FID-CLIP": float(fid_clip)})
         wandb.finish()
